@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <style type="text/css">
+        body,
+        html {
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+        }
+
+        #container {
+            width: 80%;
+            height: 100%;
+            margin: 0px;
+            float: left;
+        }
+
+        .iControlbox {
+            width: 20%;
+            height: 100%;
+            margin: 0px;
+            float: left;
+        }
+    </style>
+    <title>Document</title>
+</head>
+
+<body>
+    <script type="text/javascript"
+        src="https://webapi.amap.com/maps?v=1.4.15&key=77fb3c0b025a3b09393bd4e508961463"></script>
+    <div id="container">
+    </div>
+    <div class="iControlbox">
+        <p id="lnglat"></p>
+        <ul>
+            <li>
+                <button onclick="to2D();">2D地图</button>
+                <p>是一张普通的地图，地图级别是13。</p>
+            </li>
+            <li>
+                <button onclick="addTraffic();">实时路况</button>
+                <p>叠加上实时交通，路况信息。红色最堵。</p>
+            </li>
+            <li>
+                <button onclick="addRoadNetLayer();">路网</button>
+                <p>叠加上路网</p>
+            </li>
+            <li>
+                <button onclick="yunLayer();">麻点图</button>
+                <p>麻点图，就是云图的云图层显示。</p>
+            </li>
+            <li>
+                <button onclick="addsatellLayer();">卫星图</button>
+                <p>换上卫星图</p>
+            </li>
+            <li>
+                <button onclick="addBuildingLayer();">3D地图</button>
+                <p>显示3D楼块，只有地图级别在会显示。</p>
+            </li>
+        </ul>
+    </div>
+    <script type="text/javascript">
+        var map = new AMap.Map('container', {
+            resizeEnable: true,
+            center: [118.798823, 32.072163],
+            zoom: 13
+        });
+        //实时路况图层
+        var trafficLayer = new AMap.TileLayer.Traffic({
+            zIndex: 10
+        });
+        function addTraffic() {
+            map.add(trafficLayer);//添加图层到地图
+            roadNetLayer.setMap(null);        //隐藏路网图层
+            satellLayer.setMap(null);
+        }
+
+        var buildingLayer = new AMap.Buildings();
+        function addBuildingLayer() {
+            buildingLayer.setMap(map); //在map中添加3D图层
+            satellLayer.setMap(null);  //隐藏卫星图
+
+
+        }
+        var roadNetLayer = new AMap.TileLayer.RoadNet({ zIndex: 10 });
+        function addRoadNetLayer() {
+            map.add(roadNetLayer);
+            trafficLayer.setMap(null);   //隐藏实时路况图层
+            satellLayer.setMap(null);
+        }
+        var satellLayer = new AMap.TileLayer.Satellite({ zIndex: 10 });
+        function addsatellLayer() {
+            map.add(satellLayer);
+            buildingLayer.setMap(null);
+            roadNetLayer.setMap(null);
+            trafficLayer.setMap(null);
+        }
+        function to2D() {
+            buildingLayer.setMap(null);
+            roadNetLayer.setMap(null);
+            trafficLayer.setMap(null);
+            satellLayer.setMap(null);
+
+        }
+        function yunLayer() {
+            AMap.plugin(["AMap.CloudDataLayer"], function () {
+                var layerOptions = {
+                    query: {
+                        keywords: ""
+                    },
+                    clickable: true
+                };
+                var cloudDataLayer = new AMap.CloudDataLayer("5d65e01f305a2a4a6f5b8900", layerOptions);
+                cloudDataLayer.setMap(map); //添加到地图
+            });
+            buildingLayer.setMap(null);
+            roadNetLayer.setMap(null);
+            trafficLayer.setMap(null);
+        }
+
+    </script>
+</body>
+
+</html>
